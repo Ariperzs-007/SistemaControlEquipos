@@ -1,0 +1,11 @@
+# Archivos ejecutables
+*.exe
+
+# Archivos objeto
+*.o
+*.obj
+
+# Archivos temporales
+*.tmp
+*.temp
+.vscode/
