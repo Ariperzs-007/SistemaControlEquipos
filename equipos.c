@@ -15,10 +15,11 @@ typedef struct
 void registrarEquipo();
 void mostrarEquipos();
 void buscarEquipo();
+void modificarEquipo();
+void eliminarEquipo();
+void menu();
 
-
-int main()
-{
+int main(){
     menu();
     return 0;
 }
@@ -35,10 +36,13 @@ void menu(){
         printf("1. Registrar equipo\n");
         printf("2. Mostrar equipos\n");
         printf("3. Buscar equipo\n");
+        printf("4. Modificar equipo\n");
+        printf("5. Eliminar equipo\n");
+        printf("6. Salir\n");
+        printf("Seleccione una opcion: ");
 
 
-
-
+        scanf("%d", &opcion);
         switch(opcion){
             case 1:
                 registrarEquipo();
@@ -52,15 +56,23 @@ void menu(){
                 buscarEquipo();
                 break;
 
+            case 4:
+                modificarEquipo();
+                break;
+
+            case 5:
+                eliminarEquipo();
+                break;
+
+            case 6:
+                printf("\nSaliendo del sistema...\n");
+                break;
+
             default:
                 printf("\nOpcion invalida.\n");
         }
-            } while(opcion != 6);
+    } while(opcion != 6);
 }
-
-
-
-
 
 void registrarEquipo(){
     FILE *archivo;
@@ -150,9 +162,94 @@ void buscarEquipo(){
         }
     }
 
-    if(!encontrado)
-    {
+    if(!encontrado){
         printf("\nEquipo no encontrado.\n");
     }
     fclose(archivo);
+}
+
+void modificarEquipo(){
+    FILE *archivo;
+    Equipo equipo;
+    char codigoBuscar[20];
+    int encontrado = 0;
+    archivo = fopen("equipos.dat", "rb+");
+
+    if(archivo == NULL){
+        printf("\nNo existe el archivo.\n");
+        return;
+    }
+
+    printf("\nIngrese el codigo a modificar: ");
+    scanf("%s", codigoBuscar);
+
+    while(fread(&equipo, sizeof(Equipo), 1, archivo)){
+        if(strcmp(equipo.codigo, codigoBuscar) == 0){
+            encontrado = 1;
+
+            printf("\nNuevo nombre: ");
+            scanf(" %[^\n]", equipo.nombre);
+
+            printf("Nueva marca: ");
+            scanf(" %[^\n]", equipo.marca);
+
+            printf("Nuevo responsable: ");
+            scanf(" %[^\n]", equipo.responsable);
+
+            printf("Nuevo estado: ");
+            scanf(" %[^\n]", equipo.estado);
+
+            printf("Nuevo precio: ");
+            scanf("%f", &equipo.precio);
+
+            fseek(archivo, -sizeof(Equipo), SEEK_CUR);
+            fwrite(&equipo, sizeof(Equipo), 1, archivo);
+
+            printf("\nEquipo modificado correctamente.\n");
+            break;
+        }
+    }
+
+    if(!encontrado){
+        printf("\nEquipo no encontrado.\n");
+    }
+
+    fclose(archivo);
+}
+
+void eliminarEquipo(){
+    FILE *archivo;
+    FILE *temp;
+    Equipo equipo;
+    char codigoEliminar[20];
+    int encontrado = 0;
+    archivo = fopen("equipos.dat", "rb");
+    temp = fopen("temp.dat", "wb");
+
+    if(archivo == NULL){
+        printf("\nNo existe el archivo.\n");
+        return;
+    }
+    printf("\nIngrese el codigo a eliminar: ");
+    scanf("%s", codigoEliminar);
+
+    while(fread(&equipo, sizeof(Equipo), 1, archivo)){
+        if(strcmp(equipo.codigo, codigoEliminar) == 0){
+            encontrado = 1;
+        }
+        else{
+            fwrite(&equipo, sizeof(Equipo), 1, temp);
+        }
+    }
+    fclose(archivo);
+    fclose(temp);
+    remove("equipos.dat");
+    rename("temp.dat", "equipos.dat");
+
+    if(encontrado){
+        printf("\nEquipo eliminado correctamente.\n");
+    }
+    else{
+        printf("\nEquipo no encontrado.\n");
+    }
 }
