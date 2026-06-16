@@ -22,7 +22,7 @@ Sistema para administrar equipos informáticos asignados a colaboradores por med
  Juan Pérez
 
 ## Versión Final
-1.4
+  1.4
 
 ## Fecha
 Junio 2026
