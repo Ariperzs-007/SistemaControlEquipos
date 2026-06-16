@@ -14,6 +14,7 @@ typedef struct
 
 void registrarEquipo();
 void mostrarEquipos();
+void buscarEquipo();
 
 
 int main()
@@ -25,25 +26,47 @@ int main()
 void menu(){
     int opcion;
 
+    do{
+
   
         printf("\n=================================\n");
         printf("   SISTEMA CONTROL DE EQUIPOS\n");
         printf("=================================\n");
         printf("1. Registrar equipo\n");
         printf("2. Mostrar equipos\n");
+        printf("3. Buscar equipo\n");
 
 
 
+
+        switch(opcion){
+            case 1:
+                registrarEquipo();
+                break;
+
+            case 2:
+                mostrarEquipos();
+                break;
+
+            case 3:
+                buscarEquipo();
+                break;
+
+            default:
+                printf("\nOpcion invalida.\n");
+        }
+            } while(opcion != 6);
 }
+
+
+
+
 
 void registrarEquipo(){
     FILE *archivo;
     Equipo equipo;
-
     archivo = fopen("equipos.dat", "ab");
-
-    if(archivo == NULL)
-    {
+    if(archivo == NULL){
         printf("\nError al abrir el archivo.\n");
         return;
     }
@@ -78,19 +101,15 @@ void registrarEquipo(){
 void mostrarEquipos(){
     FILE *archivo;
     Equipo equipo;
-
     archivo = fopen("equipos.dat", "rb");
 
-    if(archivo == NULL)
-    {
+    if(archivo == NULL){
         printf("\nNo existen registros.\n");
         return;
     }
-
     printf("\n--- LISTADO DE EQUIPOS ---\n");
 
-    while(fread(&equipo, sizeof(Equipo), 1, archivo))
-    {
+    while(fread(&equipo, sizeof(Equipo), 1, archivo)){
         printf("\nCodigo      : %s", equipo.codigo);
         printf("\nNombre      : %s", equipo.nombre);
         printf("\nMarca       : %s", equipo.marca);
@@ -99,6 +118,41 @@ void mostrarEquipos(){
         printf("\nPrecio      : Q%.2f", equipo.precio);
         printf("\n-------------------------------");
     }
+    fclose(archivo);
+}
+void buscarEquipo(){
+    FILE *archivo;
+    Equipo equipo;
+    char codigoBuscar[20];
+    int encontrado = 0;
+    archivo = fopen("equipos.dat", "rb");
 
+    if(archivo == NULL){
+        printf("\nNo existe el archivo.\n");
+        return;
+    }
+
+    printf("\nIngrese el codigo a buscar: ");
+    scanf("%s", codigoBuscar);
+
+    while(fread(&equipo, sizeof(Equipo), 1, archivo)){
+        if(strcmp(equipo.codigo, codigoBuscar) == 0){
+            encontrado = 1;
+            printf("\nEquipo encontrado:\n");
+            printf("Codigo      : %s\n", equipo.codigo);
+            printf("Nombre      : %s\n", equipo.nombre);
+            printf("Marca       : %s\n", equipo.marca);
+            printf("Responsable : %s\n", equipo.responsable);
+            printf("Estado      : %s\n", equipo.estado);
+            printf("Precio      : Q%.2f\n", equipo.precio);
+
+            break;
+        }
+    }
+
+    if(!encontrado)
+    {
+        printf("\nEquipo no encontrado.\n");
+    }
     fclose(archivo);
 }
